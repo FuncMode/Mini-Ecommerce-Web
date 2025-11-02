@@ -14,7 +14,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     return;
   }
 
-  // 🌀 Show loading
+  // Show loading
   Swal.fire({
     title: 'Creating account...',
     allowOutsideClick: false,

@@ -3,37 +3,37 @@
     }
 
     /* Right-side static container */
-    #productDetails {
-      position: fixed;
-      right: 0;
-      top: 0;
-      height: 100vh;
-      width: 350px;
-      background: #f8f9fa;
-      border-left: 2px solid #ddd;
-      padding: 20px;
-      overflow-y: auto;
-      display: none; 
-      z-index: 10;
-    }
+  #productDetails {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100vh;
+    width: 350px;
+    background: #f8f9fa;
+    border-left: 2px solid #ddd;
+    padding: 20px;
+    overflow-y: auto;
+    display: none; 
+    z-index: 10;
+  }
 
-    .card {
-      height: 100%;
-    }
+  .card {
+    height: 100%;
+  }
 
-    .product-title {
-      min-height: 50px;
-    }
+  .product-title {
+    min-height: 50px;
+  }
 
-    .quantity-control button {
-      width: 35px;
-    }
+  .quantity-control button {
+    width: 35px;
+  }
 
-    .product-card {
+  .product-card {
   opacity: 0;
   transform: translateY(20px) scale(0.98);
   transition: all 0.4s ease-in-out;
-}
+  }
 
 .product-card.visible {
   opacity: 1;
