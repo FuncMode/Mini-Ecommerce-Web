@@ -1,0 +1,118 @@
+    body {
+      margin: 0;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    /* LEFT SIDE */
+    .hero-left {
+      flex: 1;
+      background-image: url("/images/Copilot_20251102_013951.png");
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      animation: slideBg 1.2s ease forwards;
+    }
+
+    body.swal2-height-auto {
+    height: 100vh !important;
+    }
+
+    html.swal2-height-auto {
+    height: 100vh !important;
+    }
+
+    .swal2-container {
+    z-index: 20000 !important;
+    }
+
+    .hero-left::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(2px);
+    }
+
+    .hero-text {
+      position: relative;
+      z-index: 2;
+      color: white;
+      top: 50%;
+      transform: translateY(-50%);
+      text-align: center;
+      padding: 0 40px;
+      animation: fadeText 1.4s ease forwards;
+    }
+
+    .hero-text h1 {
+      font-size: 38px;
+      font-weight: 700;
+    }
+
+    .hero-text p {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+
+    /* RIGHT SIDE - LOGIN CARD AREA */
+    .hero-right {
+      width: 540px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: white;
+      animation: slideCard 0.9s ease forwards;
+    }
+
+    @keyframes slideBg {
+      from { transform: translateX(-40px); opacity: 0; }
+      to   { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes fadeText {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(-50%); }
+    }
+
+    @keyframes slideCard {
+      from { transform: translateX(60px); opacity: 0; }
+      to   { transform: translateX(0); opacity: 1; }
+    }
+
+  @media (max-width: 992px) { /* tablet */
+    body {
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .hero-left {
+      width: 100%;
+      height: 45vh;
+    }
+
+    .hero-right {
+      width: 100% !important;
+      height: auto !important;
+      padding: 40px 0;
+      background: #ffffff;
+    }
+  }
+
+/* MOBILE VIEW */
+@media (max-width: 576px) {
+  .hero-text h1 {
+    font-size: 28px;
+  }
+
+  .hero-text p {
+    font-size: 14px;
+  }
+
+  .card {
+    width: 90% !important;
+    margin: auto;
+  }
+}

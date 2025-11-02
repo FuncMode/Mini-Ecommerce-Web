@@ -1,0 +1,74 @@
+    body {
+      overflow-x: hidden;
+    }
+
+    /* Right-side static container */
+    #productDetails {
+      position: fixed;
+      right: 0;
+      top: 0;
+      height: 100vh;
+      width: 350px;
+      background: #f8f9fa;
+      border-left: 2px solid #ddd;
+      padding: 20px;
+      overflow-y: auto;
+      display: none; 
+      z-index: 10;
+    }
+
+    .card {
+      height: 100%;
+    }
+
+    .product-title {
+      min-height: 50px;
+    }
+
+    .quantity-control button {
+      width: 35px;
+    }
+
+    .product-card {
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
+  transition: all 0.4s ease-in-out;
+}
+
+.product-card.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+    /* DARK MODE */
+.dark-mode {
+  background-color: #121212 !important;
+  color: #e6e6e6 !important;
+}
+
+.dark-mode .navbar {
+  background-color: #1e1e1e !important;
+}
+
+.dark-mode .card {
+  background-color: #1f1f1f !important;
+  border-color: #333;
+  color: #ddd;
+}
+
+.dark-mode #productDetails {
+  background-color: #1a1a1a !important;
+  border-left-color: #333;
+}
+
+.dark-mode .modal-content {
+  background-color: #1c1c1c !important;
+  color: #fff;
+}
+
+.dark-mode select,
+.dark-mode input,
+.dark-mode .form-control {
+  background-color: #2a2a2a !important;
+  color: #eaeaea !important;
+  border-color: #444 !important;
+}
