@@ -1,45 +1,50 @@
-    body {
-      overflow-x: hidden;
-    }
+body {
+  overflow-x: hidden;
+  background: #fdfdfd;
+}
 
-    /* Right-side static container */
-  #productDetails {
-    position: fixed;
-    right: 0;
-    top: 0;
-    height: 100vh;
-    width: 350px;
-    background: #f8f9fa;
-    border-left: 2px solid #ddd;
-    padding: 20px;
-    overflow-y: auto;
-    display: none; 
-    z-index: 10;
-  }
+/* RIGHT STATIC DETAILS - Desktop only */
+#productDetails {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  width: 350px;
+  background: #f8f9fa;
+  border-left: 2px solid #ddd;
+  padding: 20px;
+  overflow-y: auto;
+  display: none;
+  z-index: 10;
+}
 
-  .card {
-    height: 100%;
-  }
+/* Cards */
+.card {
+  height: 100%;
+  border-radius: 10px;
+  transition: transform .2s;
+}
+.card:hover {
+  transform: translateY(-4px);
+}
 
-  .product-title {
-    min-height: 50px;
-  }
+/* Titles */
+.product-title {
+  min-height: 50px;
+}
 
-  .quantity-control button {
-    width: 35px;
-  }
-
-  .product-card {
+/* Product fade animation */
+.product-card {
   opacity: 0;
   transform: translateY(20px) scale(0.98);
   transition: all 0.4s ease-in-out;
-  }
-
+}
 .product-card.visible {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
-    /* DARK MODE */
+
+/* DARK MODE */
 .dark-mode {
   background-color: #121212 !important;
   color: #e6e6e6 !important;
@@ -72,3 +77,50 @@
   color: #eaeaea !important;
   border-color: #444 !important;
 }
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+
+/* Mobile View */
+@media (max-width: 576px) {
+
+  /* Product grid 2 columns mobile */
+  /* #productList {
+    display: block !important;
+    grid-template-columns: repeat(2, 1fr);
+  } */
+
+  #productDetails {
+    position: fixed;
+    bottom: 0;
+    top: auto;
+    left: 0;
+    width: 100%;
+    height: 55vh;
+    border-left: none;
+    border-top: 2px solid #ddd;
+    display: none;
+    animation: slideUp .3s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  /* Navbar search stacking */
+  .navbar .mx-auto {
+    width: 100% !important;
+    margin-top: 8px;
+  }
+
+  #categoryFilter {
+    width: 40%;
+  }
+  #searchInput {
+    width: 60%;
+  }
+}
+

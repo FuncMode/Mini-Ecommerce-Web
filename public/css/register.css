@@ -19,7 +19,7 @@
     /* RIGHT SIDE - BACKGROUND HERO */
     .hero-right {
       flex: 1;
-      background-image: url("/images/Copilot_20251102_020458.png"); /* pwede mo palitan */
+      background-image: url("/images/Copilot_20251102_020458.webp"); 
       background-size: cover;
       background-position: center;
       position: relative;
@@ -83,7 +83,37 @@
       to   { transform: translateX(0); opacity: 1; }
     }
 
- /* MOBILE VIEW (SAME AS LOGIN) */
+
+@media (max-width: 992px) { /* tablet */
+  body {
+    flex-direction: column;
+    height: auto;
+    overflow-y: auto;
+  }
+
+  /* BACKGROUND on TOP */
+  .hero-right {
+    width: 100%;
+    height: 45vh;
+    flex: none;
+  }
+
+  /* FORM on BOTTOM */
+  .hero-left {
+    width: 100%;
+    height: auto;
+    padding: 40px 0;
+    background: white;
+  }
+
+  .card {
+    width: 400px !important;
+    margin: auto;
+  }
+}
+
+    
+ /* MOBILE VIEW */
 @media (max-width: 576px) {
 
   body {
@@ -104,7 +134,7 @@
 
   .hero-right {
     flex: 1;
-    background-image: url("/images/Copilot_20251102_020458.png");
+    background-image: url("/images/Copilot_20251102_020458.webp");
     background-size: cover;
     background-position: center;
     position: relative;

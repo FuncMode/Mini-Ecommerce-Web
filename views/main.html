@@ -37,10 +37,6 @@
 
     <!-- Sign out -->
     <button id="logoutBtn" class="btn btn-danger">Sign Out</button>
-
-    </div>
-
-    </div>
   </nav>
 
   <!-- Main Products -->
@@ -49,13 +45,17 @@
     <div id="productList" class="row g-3"></div>
   </div>
 
-  <!-- ➡️ Right Static Product Details -->
+  <!-- Right Static Product Details -->
   <div id="productDetails">
-    <h5 class="fw-bold mb-3">Item Details</h5>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold">Item Details</h5>
+      <button class="btn btn-sm btn-outline-secondary d-sm-none" onclick="document.getElementById('productDetails').style.display='none'">Close</button>
+    </div>
     <div id="detailsContent"></div>
   </div>
 
-  <!-- 🛒 CART MODAL -->
+
+  <!-- CART MODAL -->
 <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
