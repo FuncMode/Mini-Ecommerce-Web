@@ -19,7 +19,7 @@
     /* RIGHT SIDE - BACKGROUND HERO */
     .hero-right {
       flex: 1;
-      background-image: url("/images/Copilot_20251102_020458.webp"); 
+      background-image: url("/images/registerBackground.webp"); 
       background-size: cover;
       background-position: center;
       position: relative;
@@ -134,7 +134,7 @@
 
   .hero-right {
     flex: 1;
-    background-image: url("/images/Copilot_20251102_020458.webp");
+    background-image: url("/images/registerBackground.webp");
     background-size: cover;
     background-position: center;
     position: relative;

@@ -1,47 +1,34 @@
 // app.js
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
+import express from "express"; // Import Express framework
+import dotenv from "dotenv"; // Para mabasa ang .env (env variables)
+import path from "path"; // Para sa file paths
+import { fileURLToPath } from "url"; // Kailangan sa ES modules para makuha __dirname
 
-// Route handlers
+// Route handlers (galing sa routes folder)
 import authRoutes from "./routes/authRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 
-dotenv.config(); // Load .env file (DB credentials, etc.)
+dotenv.config(); // Load variables from .env DB login details
 
 const app = express();
 
-// ==========================
-// MIDDLEWARES
-// ==========================
-// Para i-allow requests from different origins (optional but recommended)
-app.use(cors());
-
-// Para mabasa ang JSON body sa request (e.g. POST data)
+// Para ma-parse/ma-read si JSON body sa requests
 app.use(express.json());
 
-// Para mabasa ang URL-encoded forms (e.g. HTML forms)
-app.use(express.urlencoded({ extended: true }));
-
-// Resolve __dirname since ES Modules don't have it by default
+// Kailangan para makuha actual path ng file (since ES modules wala default __dirname)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Serve static files (CSS, JS, Images) from public folder
+// Lahat ng files sa "public" folder magiging accessible sa browser
+// Halimbawa: /public/style.css → http://localhost:3000/style.css
 app.use(express.static(path.join(__dirname, "public")));
 
-
-// ==========================
-// FRONTEND ROUTES (VIEWS)
-// ==========================
-
-// Default → redirect to login page
+// Default route → redirect papuntang /register page
 app.get("/", (req, res) => {
-  res.redirect("/login");
+  res.redirect("/register");
 });
 
+// LOAD FRONTEND PAGES (HTML files)
 // Login page
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "login.html"));
@@ -52,27 +39,18 @@ app.get("/register", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "register.html"));
 });
 
-// Main dashboard page (after login)
+// Main dashboard (after login)
 app.get("/main", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "main.html"));
 });
 
-
-// ==========================
 // API ROUTES
-// ==========================
-// Authentication (Register + Login)
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes); // For register & login API
+app.use("/api/cart", cartRoutes); // For cart operations (add, get, delete, etc.)
 
-// Cart actions (Add / View / Remove / Clear)
-app.use("/api/cart", cartRoutes);
+const PORT = process.env.PORT || 3000; // Port number (galing .env or default 3000)
 
-
-// ==========================
-// START SERVER
-// ==========================
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => 
-  console.log(`✅ Server running at: http://localhost:${PORT}`)
+// Start Server
+app.listen(PORT, () =>
+  console.log(`Server running at: http://localhost:${PORT}`)
 );

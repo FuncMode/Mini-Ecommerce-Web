@@ -1,0 +1,17 @@
+-- CREATE TABLE users (
+--   user_id INT NOT NULL AUTO_INCREMENT,
+--   username VARCHAR(50) NOT NULL,
+--   password VARCHAR(100) NOT NULL,
+--   PRIMARY KEY (user_id)
+-- );
+
+-- CREATE TABLE carts (
+--   cart_id INT NOT NULL AUTO_INCREMENT,
+--   user_id INT NOT NULL,
+--   product_id INT NOT NULL,
+--   product_name VARCHAR(100) NOT NULL,
+--   price DECIMAL(10,2) NOT NULL,
+--   quantity INT NOT NULL,
+--   PRIMARY KEY (cart_id),
+--   FOREIGN KEY (user_id) REFERENCES users(user_id)
+-- );

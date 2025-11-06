@@ -1,25 +1,19 @@
 // routes/authRoutes.js
-import express from "express";
-import { registerUser, loginUser } from "../controllers/authController.js";
+import express from "express"; // Import Express
+import { registerUser, loginUser } from "../controllers/authController.js"; // Import controllers
 
 const router = express.Router(); 
-// Ginagawa natin si router para dito ilalagay
-// lahat ng routes na related sa authentication (register/login)
+// Gumagawa tayo ng hiwalay na router para dito ilalagay
+// lahat ng routes na related sa Authentication (Register & Login)
 
-
-// ========================
-// REGISTER ROUTE
-// ========================
-// When client sends POST /api/auth/register → call registerUser controller
+// ======================== REGISTER ROUTE ========================
 router.post("/register", registerUser);
+// POST request sa /register → tatawagin yung registerUser controller
 
-
-// ========================
-// LOGIN ROUTE
-// ========================
-// When client sends POST /api/auth/login → call loginUser controller
+// ======================== LOGIN ROUTE ===========================
 router.post("/login", loginUser);
+// POST request sa /login → tatawagin yung loginUser controller
 
+export default router; 
+// Ia-export para magamit sa main server file (app.js)
 
-// Export para magamit sa main server (app.js)
-export default router;

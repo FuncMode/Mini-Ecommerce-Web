@@ -9,7 +9,7 @@
     /* LEFT SIDE */
     .hero-left {
       flex: 1;
-      background-image: url("/images/Copilot_20251102_013951.webp");
+      background-image: url("/images/loginBackground.webp");
       background-size: cover;
       background-position: center;
       position: relative;

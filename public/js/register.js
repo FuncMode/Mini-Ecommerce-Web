@@ -1,28 +1,24 @@
 // public/js/register.js
 
-// =======================
-// REGISTER FORM SUBMIT
-// =======================
+// ===== REGISTER FORM EVENT =====
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
-  e.preventDefault(); // Stop page reload
+  e.preventDefault(); // Stop automatic page refresh
 
-  // Kukunin yung user input
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
+  const username = document.getElementById('username').value.trim(); // Kukuha ng username input
+  const password = document.getElementById('password').value.trim(); // Kukuha ng password input
 
-  // Check kung may number sa password
-  const hasNumber = /\d/.test(password);
+  const hasNumber = /\d/.test(password); // Check kung may number sa password using regex literal
 
-  // Basic validation (username / password must ≥ 6 chars & may number)
+  // Basic validation rules
   if (username.length < 6 || password.length < 6 || !hasNumber) {
-    return Swal.fire({
+    return Swal.fire({ // Mag show ng error message
       icon: 'error',
       title: 'Invalid Input',
       text: 'Password must have at least 6 characters and include at least 1 number.'
     });
   }
 
-  // Show loading popup habang nagse-send sa server
+  // Loading popup habang nagse-send request
   Swal.fire({
     title: 'Creating account...',
     allowOutsideClick: false,
@@ -30,65 +26,57 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   });
 
   try {
-    // Send register request to backend API
+    // Send request sa backend /api/auth/register
     const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
+      method: 'POST', // POST method dahil nagse-send ng data
+      headers: { 'Content-Type': 'application/json' }, // Tells server na JSON format
+      body: JSON.stringify({ username, password }), // Data na ipapasa sa backend
     });
 
-    const data = await res.json();
-    Swal.close(); // Close loading modal
+    const data = await res.json(); // Convert response to JSON
+    Swal.close(); // Close loading popup
 
-    // ✅ Registration successful
-    if (res.ok) {
+    if (res.ok) { // If success (status 200-299)
       Swal.fire({
-        icon: 'success',
+        icon: 'success', // Success message
         title: 'Account created!',
-        text: data.message || 'You can now log in.',
+        text: data.message,
         showConfirmButton: false,
         timer: 1500
       });
 
-      // Redirect sa login page
-      setTimeout(() => window.location.href = '/', 1600);
+      setTimeout(() => window.location.href = '/login', 1600); // Redirect to login page
       return;
     }
 
-    // ❌ Registration failed (example: username already exists)
+    // If error galing backend (e.g. username exists)
     Swal.fire({
       icon: 'error',
       title: 'Registration failed',
-      text: data.message || 'Please try again.'
+      text: data.message // message response from backend
     });
 
   } catch (err) {
-    console.error(err);
+    console.error(err); // Log error for debugging
 
-    // ❌ Server / connection error
     Swal.fire({
-      icon: 'error',
+      icon: 'error', // Server error popup
       title: 'Server error',
-      text: 'Could not connect to the server.'
+      text: 'Could not connect to the server.' // minsan kase tulog yung server eh
     });
   }
 });
 
 
-// =======================
-// SHOW / HIDE PASSWORD
-// =======================
+// ===== SHOW / HIDE PASSWORD SECTION =====
+const passwordInput = document.getElementById('password'); // Input field ng password
+const toggleBtn = document.getElementById('togglePassword'); // Show/Hide button
+const icon = document.getElementById('toggleIcon'); // Eye icon
 
-// Elements
-const passwordInput = document.getElementById('password');
-const toggleBtn = document.getElementById('togglePassword');
-const icon = document.getElementById('toggleIcon');
-
-// Toggle password visibility (eye ↔ eye-slash)
 toggleBtn.addEventListener('click', () => {
-  const show = passwordInput.type === 'password';
-  passwordInput.type = show ? 'text' : 'password';
+  const show = passwordInput.type === 'password'; // Check current type
+  passwordInput.type = show ? 'text' : 'password'; // Switch text/password
 
-  icon.classList.toggle('bi-eye');
-  icon.classList.toggle('bi-eye-slash');
+  icon.classList.toggle('bi-eye'); // Toggle open eye icon
+  icon.classList.toggle('bi-eye-slash'); // Toggle closed eye icon
 });

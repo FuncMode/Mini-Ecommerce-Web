@@ -1,42 +1,35 @@
-let allProducts = [];
-let cart = [];
-let selectedProduct = null;
-let debounceTimer = null;
-const EXCHANGE_RATE = 56;
+let allProducts = []; // Storage ng lahat ng products galing API
+let cart = []; // Local cart data (display only)
+let selectedProduct = null; // Product na currently tinitingnan sa modal
+let debounceTimer = null; // Timer para sa search delay
+const EXCHANGE_RATE = 56; // USD -> PHP conversion
 
-// ==========================================================
-// INITIAL LOAD
-// ==========================================================
-document.addEventListener("DOMContentLoaded", () => {
-  loadProducts();
-  loadCartFromDB();
-  setupEventListeners();
+document.addEventListener("DOMContentLoaded", () => { // Pag load ng page
+  loadProducts(); // Fetch products
+  loadCartFromDB(); // Load cart sa database
+  setupEventListeners(); // Attach event listeners
 });
 
-// ==========================================================
-// FETCH PRODUCTS
-// ==========================================================
 async function loadProducts() {
   try {
-    const res = await fetch('https://fakestoreapi.com/products');
-    allProducts = await res.json();
-    renderProducts(allProducts);
+    const res = await fetch('https://fakestoreapi.com/products'); // Get products from API
+    if (!res.ok) throw new Error(`Server Error: ${res.status}`); // Check request success
+    allProducts = await res.json(); // Convert response to JSON
+    renderProducts(allProducts); // Display products
   } catch (err) {
-    console.error('Product Fetch Error:', err);
+    console.error('Product Fetch Error:', err); // Error log
   }
 }
 
-// ==========================================================
-// PRODUCT DISPLAY
-// ==========================================================
 function renderProducts(products) {
-  const productList = document.getElementById('productList');
+  const productList = document.getElementById('productList'); // Container ng item cards
 
-  if (!products.length) {
+  if (!products.length) { // If no results
     productList.innerHTML = `<p class="text-center text-muted">No products found.</p>`;
     return;
   }
 
+  // Generate product cards
   productList.innerHTML = products.map(product => `
     <div class="col-md-4 col-lg-3 d-flex">
       <div class="card w-100 shadow-sm product-card">
@@ -47,7 +40,6 @@ function renderProducts(products) {
             <h6 class="card-title">${product.title}</h6>
             <p class="text-success fw-bold mb-3">₱${(product.price * EXCHANGE_RATE).toFixed(2)}</p>
           </div>
-          <!-- data-id used so we can delegate click events -->
           <button class="btn btn-secondary w-100 mt-auto view-item-btn"
             data-id="${product.id}">View Item</button>
         </div>
@@ -55,148 +47,106 @@ function renderProducts(products) {
     </div>
   `).join('');
 
-  // simple animation 
+  // Smooth fade animation per item
   document.querySelectorAll('.product-card').forEach((card, i) =>
     setTimeout(() => card.classList.add('visible'), i * 100)
   );
 }
 
-// ==========================================================
-// SEARCH & FILTERS
-// ==========================================================
 function setupEventListeners() {
   document.getElementById('searchInput').addEventListener('input', () => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(applyFilters, 400);
+    clearTimeout(debounceTimer); // Clear previous timer
+    debounceTimer = setTimeout(applyFilters, 400); // Search delay
   });
 
-  document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+  document.getElementById('categoryFilter').addEventListener('change', applyFilters); // Category change
 
-  // Global click delegate: catches view-item and other dynamic buttons
   document.addEventListener('click', (e) => {
-    if (e.target.classList.contains("view-item-btn")) {
-      viewItem(Number(e.target.dataset.id));
+    if (e.target.classList.contains("view-item-btn")) { // View Item button clicked
+      viewItem(Number(e.target.dataset.id)); // Get item by ID
     }
   });
 }
 
 function applyFilters() {
-  const search = document.getElementById('searchInput').value.toLowerCase().trim();
-  const category = document.getElementById('categoryFilter').value;
-  
-  // Copy allProducts so original array stays intact
-  let filtered = [...allProducts];
+  const search = document.getElementById('searchInput').value.toLowerCase().trim(); // Search term
+  const category = document.getElementById('categoryFilter').value; // Category value
 
-  if (category !== "all") filtered = filtered.filter(p => p.category === category);
+  let filtered = [...allProducts]; // Copy original list
+
+  if (category !== "all") filtered = filtered.filter(p => p.category === category); // Filter by category
   if (search) filtered = filtered.filter(p =>
     p.title.toLowerCase().includes(search) ||
     p.category.toLowerCase().includes(search)
-  );
+  ); // Filter by search
 
-  renderProducts(filtered);
+  renderProducts(filtered); // Re-render products
 }
 
-// ==========================================================
-// PRODUCT DETAILS MODAL
-// ==========================================================
 function viewItem(id) {
-  selectedProduct = allProducts.find(p => p.id === id);
-  if (!selectedProduct) return; // safety check
+  selectedProduct = allProducts.find(p => p.id === id); // Hanapin product by ID
+  if (!selectedProduct) return;
 
-  const peso = (selectedProduct.price * EXCHANGE_RATE).toFixed(2);
+  const peso = (selectedProduct.price * EXCHANGE_RATE).toFixed(2); // Convert price to PHP
 
+  // Fill modal content
   document.getElementById('detailsContent').innerHTML = `
     <div class="text-center">
       <img src="${selectedProduct.image}" style="max-width:150px;height:150px;object-fit:contain;">
       <h6 class="mt-3">${selectedProduct.title}</h6>
       <p class="text-success fw-bold mb-2">₱${peso}</p>
     </div>
-
     <div class="d-flex justify-content-center align-items-center mb-3">
       <button class="btn btn-outline-secondary qty-btn" data-change="-1">-</button>
       <input type="number" id="quantity" class="form-control mx-2 text-center" value="1" min="1" style="width:70px;">
       <button class="btn btn-outline-secondary qty-btn" data-change="1">+</button>
     </div>
-
     <p class="text-center fw-bold">Total: ₱<span id="totalPrice">${peso}</span></p>
-
     <div class="d-grid">
       <button class="btn btn-primary" id="addToCartBtn">Add to Cart</button>
       <button class="btn btn-danger mt-2" id="closeDetailsBtn">Close</button>
     </div>
   `;
 
-  document.getElementById('productDetails').style.display = "block";
+  document.getElementById('productDetails').style.display = "block"; // Show modal
 
-  // quantity adjustments:
+  // Quantity buttons
   document.querySelectorAll(".qty-btn").forEach(btn => {
     btn.addEventListener("click", () => changeQuantity(Number(btn.dataset.change)));
   });
 
-  // addToCart button listener
-  document.getElementById("addToCartBtn").addEventListener("click", addToCart);
-
-  // close button listener
-  document.getElementById("closeDetailsBtn").addEventListener("click", closeDetails);
+  document.getElementById("addToCartBtn").addEventListener("click", addToCart); // Add to cart handler
+  document.getElementById("closeDetailsBtn").addEventListener("click", closeDetails); // Close modal handler
 }
 
 function changeQuantity(step) {
-  const qtyInput = document.getElementById('quantity');
-  const qty = Math.max(1, Number(qtyInput.value) + step);
+  const qtyInput = document.getElementById('quantity'); // Quantity input
+  const qty = Math.max(1, Number(qtyInput.value) + step); // Prevent 0/negative
   qtyInput.value = qty;
   document.getElementById('totalPrice').textContent =
-    (selectedProduct.price * EXCHANGE_RATE * qty).toFixed(2);
+    (selectedProduct.price * EXCHANGE_RATE * qty).toFixed(2); // Update total price
 }
 
 function closeDetails() {
-  document.getElementById('productDetails').style.display = "none";
+  document.getElementById('productDetails').style.display = "none"; // Hide modal
 }
 
-// ==========================================================
-// CART (DB SYNC)
-// ==========================================================
 async function addToCart() {
-  // Kukunin yung username na naka-login (naka-store sa browser storage)
-  const username = localStorage.getItem("username");
+  const user_id = localStorage.getItem("user_id"); // Get logged in user
+  if (!user_id) return Swal.fire({ icon: "error", title: "Not logged in", text: "Please log in first." });
 
-  // Kung walang naka-login, bawal mag-add to cart
-  if (!username) {
-    return Swal.fire({
-      icon: "error",
-      title: "Not logged in",
-      text: "Please log in first."
-    });
-  }
+  const qty = Number(document.getElementById("quantity").value); // Quantity selected
+  const pesoPrice = selectedProduct.price * EXCHANGE_RATE; // Price in PHP
 
-  // Quantity na in-input ng user
-  const qty = Number(document.getElementById("quantity").value);
-
-  // Convert USD → PHP (based on selectedProduct price)
-  const pesoPrice = selectedProduct.price * EXCHANGE_RATE;
-
-  // I-check kung valid yung quantity
-  if (qty <= 0 || isNaN(qty)) {
-    return Swal.fire({
-      icon: "warning",
-      title: "Invalid quantity",
-      text: "Please enter a valid number."
-    });
-  }
-
-  // Loading indicator habang nagse-send ng request
-  Swal.fire({
-    title: "Adding to cart...",
-    allowOutsideClick: false,
-    didOpen: () => Swal.showLoading()
-  });
+  Swal.fire({ title: "Adding to cart...", allowOutsideClick: false, didOpen: () => Swal.showLoading() }); // Loading modal
 
   try {
-    // Ipadala yung item details sa backend API
+    // Send to backend /api/cart/add
     const response = await fetch("/api/cart/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        username,
+        user_id,
         product_id: selectedProduct.id,
         product_name: selectedProduct.title,
         price: pesoPrice,
@@ -205,60 +155,33 @@ async function addToCart() {
     });
 
     const data = await response.json();
-    Swal.close(); // Close loading popup
+    Swal.close();
 
-    // Kung success (status code 200-299)
-    if (response.ok) {
-      Swal.fire({
-        icon: "success",
-        title: "Added to cart!",
-        text: data.message,
-        timer: 900,
-        showConfirmButton: false
-      });
-
-      closeDetails(); // Close product details modal
-      loadCartFromDB(); // Reload cart UI para makita update
-
+    if (response.ok) { // Success
+      Swal.fire({ icon: "success", title: "Added to cart!", text: data.message, timer: 900, showConfirmButton: false });
+      closeDetails();
+      loadCartFromDB(); // Re-fetch cart from DB
     } else {
-      // If may error sa backend (e.g. duplicate, fail query)
-      Swal.fire({ icon: "error", title: "Error", text: data.message });
+      Swal.fire({ icon: "error", title: "Error", text: data.message }); // Error message
     }
   } catch (error) {
-    // Pag walang connection or backend down
     Swal.close();
-    Swal.fire({
-      icon: "error",
-      title: "Server error",
-      text: "Could not connect to backend."
-    });
+    Swal.fire({ icon: "error", title: "Server error", text: "Could not connect to backend." });
   }
 }
 
-function showToast(message, type) {
-  const toast = document.createElement("div");
-  toast.className = `toast align-items-center text-bg-${type} border-0 show position-fixed bottom-0 end-0 m-3`;
-  toast.innerHTML = `<div class="d-flex"><div class="toast-body">${message}</div></div>`;
-  document.body.appendChild(toast);
-
-  // Auto-remove pagkatapos ng 3 seconds
-  setTimeout(() => toast.remove(), 3000);
-}
-
-// loadCartFromDB:
 async function loadCartFromDB() {
-  const username = localStorage.getItem("username");
-  if (!username) return;
+  const user_id = localStorage.getItem("user_id"); // Get logged in user
+  if (!user_id) return;
 
   try {
-    const res = await fetch(`/api/cart?username=${username}`);
+    const res = await fetch(`/api/cart?user_id=${user_id}`); // Fetch cart data
     const data = await res.json();
 
     if (data.success) {
-      // Merge duplicates by product_id
-      const merged = {};
+      const merged = {}; // Temporary object for merging duplicates
 
-      data.cart.forEach(item => {
+      data.cart.forEach(item => { // Loop through DB items
         if (!merged[item.product_id]) {
           merged[item.product_id] = {
             id: item.product_id,
@@ -267,41 +190,38 @@ async function loadCartFromDB() {
             quantity: item.quantity,
           };
         } else {
-          merged[item.product_id].quantity += item.quantity;
+          merged[item.product_id].quantity += item.quantity; // Add qty if existing
         }
       });
 
       cart = Object.values(merged).map(item => ({
         ...item,
-        total: item.price * item.quantity
+        total: item.price * item.quantity // Compute total price
       }));
 
-      updateCartBadge();
+      updateCartBadge(); // Update cart icon badge
     }
   } catch (err) {
-    console.error("Error loading cart:", err);
+    console.error("Error loading cart:", err); // Log error
   }
 }
 
-
-// ==========================================================
-// CART UI
-// ==========================================================
 document.getElementById('cartBtn').addEventListener('click', () => {
-  renderCart();
-  new bootstrap.Modal(document.getElementById('cartModal')).show();
+  renderCart(); // Draw cart modal content
+  new bootstrap.Modal(document.getElementById('cartModal')).show(); // Show modal
 });
 
 function renderCart() {
-  const cartItems = document.getElementById('cartItems');
-  const cartTotal = document.getElementById('cartTotal');
+  const cartItems = document.getElementById('cartItems'); // Items container
+  const cartTotal = document.getElementById('cartTotal'); // Total price display
 
-  if (!cart.length) {
+  if (!cart.length) { // Empty cart
     cartItems.innerHTML = `<p class="text-center text-muted">Your cart is empty.</p>`;
     cartTotal.textContent = "0.00";
     return;
   }
 
+  // Display cart items
   cartItems.innerHTML = cart.map((item, index) => `
     <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
       <div>
@@ -315,19 +235,18 @@ function renderCart() {
     </div>
   `).join('');
 
-  cartTotal.textContent = cart.reduce((s, i) => s + i.total, 0).toFixed(2);
+  cartTotal.textContent = cart.reduce((s, i) => s + i.total, 0).toFixed(2); // Compute total
 
-  // Attach remove handlers to each remove button
   document.querySelectorAll(".remove-item-btn").forEach(btn => {
-    btn.addEventListener("click", () => removeItem(Number(btn.dataset.index)));
+    btn.addEventListener("click", () => removeItem(Number(btn.dataset.index))); // Remove handler
   });
 }
 
 function updateCartBadge() {
-  const existingBadge = document.getElementById('cartCount');
-  if (existingBadge) existingBadge.remove();
+  const existingBadge = document.getElementById('cartCount'); // Check if badge exists
+  if (existingBadge) existingBadge.remove(); // Remove old badge
 
-  if (cart.length > 0) {
+  if (cart.length > 0) { // If cart not empty show badge
     const badge = document.createElement('span');
     badge.id = 'cartCount';
     badge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger';
@@ -339,73 +258,53 @@ function updateCartBadge() {
   }
 }
 
-// ==========================================================
-// REMOVE ITEM
-// ==========================================================
 async function removeItem(index) {
-  const username = localStorage.getItem("username");
-  if (!username) {
-    Swal.fire("Error", "Log in first.", "error");
-    return;
-  }
+  const user_id = localStorage.getItem("user_id"); // Check user login
+  if (!user_id) return Swal.fire("Error", "Log in first.", "error");
 
-  const item = cart[index];
+  const item = cart[index]; // Target item
   if (!item) return;
 
-  // Auto-delete when only 1 exists
-  if (item.quantity === 1) {
-    try {
-      await fetch('/api/cart/remove', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, product_id: item.id, removeQty: 1 })
-      });
-      await loadCartFromDB();
-      renderCart();
-    } catch (err) {
-      console.error("Remove error:", err);
-      Swal.fire("Error", "Could not remove item.", "error");
-    }
+  if (item.quantity === 1) { // If only one piece
+    await fetch('/api/cart/remove', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id, product_id: item.id, removeQty: 1 })
+    });
+    await loadCartFromDB(); // Refresh cart
+    renderCart();
     return;
   }
 
-  // Prompt user for number to remove when qty >= 2
+  // Ask quantity to remove
   const { value: qty } = await Swal.fire({
     title: `Remove Quantity`,
     input: 'number',
     inputValue: 1,
     inputAttributes: { min: 1, max: item.quantity, step: 1 },
     showCancelButton: true,
-    confirmButtonText: "Remove",
+    confirmButtonText: "Remove"
   });
 
-  // If user cancels or enters invalid value, stop
-  if (!qty) return;
+  if (!qty) return; // Cancelled
 
-  try {
-    await fetch('/api/cart/remove', {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, product_id: item.id, removeQty: Number(qty) })
-    });
-    await loadCartFromDB();
-    renderCart();
-  } catch (err) {
-    console.error("Remove error:", err);
-    Swal.fire("Error", "Could not remove items.", "error");
-  }
+  await fetch('/api/cart/remove', {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id, product_id: item.id, removeQty: Number(qty) })
+  });
+
+  await loadCartFromDB(); // Refresh cart
+  renderCart();
 }
 
-// ==========================================================
-// CHECKOUT
-// ========================================================== 
 document.getElementById('checkoutBtn').addEventListener("click", async () => {
-  if (!cart.length) return Swal.fire("Empty Cart", "", "warning");
+  if (!cart.length) return Swal.fire("Empty Cart", "", "warning"); // No items
 
-  const username = localStorage.getItem("username");
-  if (!username) return Swal.fire("Error", "Log in first.", "error");
+  const user_id = localStorage.getItem("user_id"); // Get user
+  if (!user_id) return Swal.fire("Error", "Log in first.", "error");
 
-  const total = cart.reduce((s,i)=>s+i.total,0).toFixed(2);
+  const total = cart.reduce((s,i)=>s+i.total,0).toFixed(2); // Compute total
 
   Swal.fire({
     icon:'success',
@@ -414,43 +313,44 @@ document.getElementById('checkoutBtn').addEventListener("click", async () => {
     confirmButtonText:'Done'
   });
 
-  try {
-    await fetch('/api/cart/clear', {
-      method:'DELETE',
-      headers:{ 'Content-Type':'application/json' },
-      body:JSON.stringify({ username })
-    });
+  await fetch('/api/cart/clear', {
+    method:'DELETE',
+    headers:{ 'Content-Type':'application/json' },
+    body:JSON.stringify({ user_id })
+  });
 
-    await loadCartFromDB();
-    renderCart();
-  } catch (err) {
-    console.error("Clear cart error:", err);
-    Swal.fire("Error", "Could not clear cart.", "error");
-  }
+  await loadCartFromDB(); // Clear cart visually
+  renderCart();
 });
 
-// ==========================================================
-// THEME & LOGOUT
-// ==========================================================
-const themeToggle = document.getElementById("themeToggle");
-if (localStorage.getItem("theme") === "dark") {
-  document.body.classList.add("dark-mode");
-  if (themeToggle) themeToggle.textContent = "☀️";
+const themeToggle = document.getElementById("themeToggle"); // Theme toggle button
+const user_id = localStorage.getItem("user_id"); // Current user
+
+function applyUserTheme() {
+  if (!user_id) return;
+
+  const savedTheme = localStorage.getItem(`theme_${user_id}`) || "light"; // Load theme
+
+  document.body.classList.toggle("dark-mode", savedTheme === "dark"); // Apply theme
+
+  if (themeToggle) {
+    themeToggle.textContent = savedTheme === "dark" ? "☀️" : "🌙"; // Update toggle icon
+  }
 }
+
+applyUserTheme(); // Apply theme on load
 
 if (themeToggle) {
   themeToggle.addEventListener("click", () => {
+    const newTheme = document.body.classList.contains("dark-mode") ? "light" : "dark"; // Determine new theme
+    
     document.body.classList.toggle("dark-mode");
-    const mode = document.body.classList.contains("dark-mode") ? "dark" : "light";
-    localStorage.setItem("theme", mode);
-    themeToggle.textContent = mode === "dark" ? "☀️" : "🌙";
+    localStorage.setItem(`theme_${user_id}`, newTheme); // Save theme
+
+    themeToggle.textContent = newTheme === "dark" ? "☀️" : "🌙"; // Update icon
   });
 }
 
-
-//==========================
-// LOGOUT
-//==========================
 const logoutBtn = document.getElementById("logoutBtn");
 if (logoutBtn) {
   logoutBtn.addEventListener("click", () => {
@@ -460,10 +360,10 @@ if (logoutBtn) {
       showCancelButton:true
     }).then(res => {
       if (res.isConfirmed) {
+        localStorage.removeItem("user_id"); // Clear user session
         localStorage.removeItem("username");
-        window.location.href = "/";
+        window.location.href = "/login"; // Redirect to login
       }
     });
   });
 }
-

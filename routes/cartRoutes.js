@@ -3,39 +3,31 @@ import express from "express";
 import { addToCart, getCart, clearCart, removeFromCart } from "../controllers/cartController.js";
 
 const router = express.Router();
-// Gumagawa tayo ng router para dito ilagay lahat ng cart-related API endpoints
+// Gumawa tayo ng router para lahat ng Cart-related endpoints dito ilalagay
 
 // =========================
 // ADD ITEM TO CART
 // =========================
-// POST /api/cart/add
-// Mag-a-add ng product sa cart (or mag-a-update ng quantity kung existing na)
-router.post("/add", addToCart);
+router.post("/add", addToCart); 
+// POST /add → tumatawag sa addToCart controller para maglagay (or mag-add qty) ng item
 
 // =========================
-// GET USER CART DATA
+// GET USER CART
 // =========================
-// GET /api/cart?username=<username>
-// Kukunin lahat ng items sa cart ng specific na user
-router.get("/", getCart);
-
+router.get("/", getCart); 
+// GET / → kukunin lahat ng cart items ng specific user (based sa user_id)
 
 // =========================
-// REMOVE ITEM / REDUCE QTY
+// REMOVE ITEM or BAWAS QTY
 // =========================
-// POST /api/cart/remove
-// Either tatanggalin ang item kung 1 lang quantity,
-// or babawasan quantity kung higit sa 1
-router.post("/remove", removeFromCart);
-
+router.post("/remove", removeFromCart); 
+// POST /remove → kung 1 lang quantity tatanggalin, kung marami babawasan lang
 
 // =========================
-// CLEAR CART AFTER CHECKOUT
+// CLEAR CART (CHECKOUT / LOGOUT)
 // =========================
-// DELETE /api/cart/clear
-// Tatanggalin lahat ng items sa cart ng user pagkatapos ng checkout
-router.delete("/clear", clearCart);
+router.delete("/clear", clearCart); 
+// DELETE /clear → buburahin lahat ng items sa cart ng user
 
-
-// Export para magamit ng main server
-export default router;
+export default router; 
+// I-export para magamit sa main server (app.js)

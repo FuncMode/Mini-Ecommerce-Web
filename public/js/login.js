@@ -38,22 +38,22 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     Swal.close(); // alisin yung loading modal
 
     // Successful login
-    if (res.ok) {
-      // Store username sa browser local storage
-      localStorage.setItem("username", data.username || username);
+  if (res.ok) {
+    localStorage.setItem("user_id", data.user_id || data.id || data.user?.id);
+    localStorage.setItem("username", data.username || username);
 
-      Swal.fire({
-        icon: 'success',
-        title: 'Login successful!',
-        text: `Welcome, ${data.username || username}!`,
-        showConfirmButton: false,
-        timer: 1000
-      });
+    Swal.fire({
+      icon: 'success',
+      title: 'Login successful!',
+      text: `Welcome, ${data.username || username}!`,
+      showConfirmButton: false,
+      timer: 1000
+    });
 
-      // Redirect to /main after short delay
-      setTimeout(() => window.location.href = '/main', 1100);
-      return;
-    }
+    // Redirect
+    setTimeout(() => window.location.href = '/main', 1100);
+    return;
+  }
 
     // Username does not exist
     if (res.status === 404 && data.message === 'Username not found') {
