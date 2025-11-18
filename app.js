@@ -21,7 +21,12 @@ const __dirname = path.dirname(__filename);
 
 // Lahat ng files sa "public" folder magiging accessible sa browser
 // Halimbawa: /public/style.css → http://localhost:3000/style.css
-app.use(express.static(path.join(__dirname, "public")));
+// app.use(express.static(path.join(__dirname, "public")));
+// app.use(express.static(path.join(__dirname, "public/dist")));
+app.use("/css", express.static(path.join(__dirname, "public/css")));
+app.use("/images", express.static(path.join(__dirname, "public/images")));
+app.use("/dist", express.static(path.join(__dirname, "public/dist")));
+
 
 // Default route → redirect papuntang /register page
 app.get("/", (req, res) => {

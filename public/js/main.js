@@ -342,7 +342,7 @@ applyUserTheme(); // Apply theme on load
 
 if (themeToggle) {
   themeToggle.addEventListener("click", () => {
-    const newTheme = document.body.classList.contains("dark-mode") ? "light" : "dark"; // Determine new theme
+    const newTheme = document.body.classList.contains("dark-mode") ? "light" : "dark";
     
     document.body.classList.toggle("dark-mode");
     localStorage.setItem(`theme_${user_id}`, newTheme); // Save theme
